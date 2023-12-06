@@ -5,6 +5,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
+    protected $dates = ['cancelled_date'];
+
     public $incrementing = true;
     protected $fillable = [
         'customers_id',
@@ -12,6 +14,7 @@ class Order extends Model
         'billing_address_id',
         'shipping_address_id',
         'payment_method',
+        'status', 
     ];
 
     public function user()
@@ -48,5 +51,5 @@ public function products()
     {
         return $this->belongsToMany(Product::class);
     }
-
+ 
 }

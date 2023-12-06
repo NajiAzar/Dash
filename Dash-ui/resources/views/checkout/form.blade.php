@@ -124,8 +124,8 @@
 
 <div class="col-12 mb-3">
 <div class="form-check">
-            <input class="form-check-input" type="radio" name="payment_method" id="paypal" value="paypal" required>
-            <label class="form-check-label" for="paypal">PayPal</label>
+            <input class="form-check-input" type="radio" name="payment_method" id="paypal" value="razorpay" required>
+            <label class="form-check-label" for="razorpay">Razorpay</label>
         </div>
 
         <div class="form-check">
@@ -133,18 +133,8 @@
             <label class="form-check-label" for="cash_on_delivery">Cash on Delivery</label>
         </div>
 
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="payment_method" id="credit_card" value="credit_card" required>
-            <label class="form-check-label" for="credit_card">Credit Card</label>
-        </div>
-
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="payment_method" id="direct_bank_transfer" value="direct_bank_transfer" required>
-            <label class="form-check-label" for="direct_bank_transfer">Direct Bank Transfer</label>
-        </div>
-    </div>
-                      
-                    </div>
+       
+</div>
                 </div>
             </div>
 

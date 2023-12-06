@@ -38,7 +38,7 @@ Route::get('/register/admin', [App\Http\Controllers\Auth\RegisterController::cla
 Route::get('/register/writer', [App\Http\Controllers\Auth\RegisterController::class,'showWriterRegisterForm']);
 
 Route::post('/login/customer', [App\Http\Controllers\Auth\LoginController::class,'customerLogin'])->name('customerLogin');
-Route::post('/login/admin', [App\Http\Controllers\Auth\LoginController::class,'adminLogin']);
+Route::post('/login/admin', [App\Http\Controllers\Auth\LoginController::class,'adminLogin'])->name('login');
 Route::post('/login', [App\Http\Controllers\Auth\LoginController::class,'adminLogin']);
 Route::post('/login/writer', [App\Http\Controllers\Auth\LoginController::class,'writerLogin']);
 Route::post('/register/customer', [App\Http\Controllers\Auth\RegisterController::class,'createCustomer'])->name('create.customer');
@@ -84,6 +84,9 @@ Route::get('/promotionalbanners/show', [App\Http\Controllers\PromotionalBannerCo
 Route::get('/promotionalbanners/edit/{id}', [App\Http\Controllers\PromotionalBannerController::class, 'edit'])->name('promotionalbanners.edit');
 Route::put('/promotionalbanners/{id}', [App\Http\Controllers\PromotionalBannerController::class, 'update'])->name('promotionalbanners.update');
 Route::delete('/promotionalbanners/{id}', [App\Http\Controllers\PromotionalBannerController::class, 'destroy'])->name('promotionalbanners.destroy');
+Route::get('/sales-report', [App\Http\Controllers\SalesReportController::class, 'index'])->name('sales.report');
+Route::get('/cancelledorders-report', [App\Http\Controllers\CancelledorderReportController::class, 'index'])->name('cancelledorders.report');
+
 
 Route::post('/categories/toggle-featured', [App\Http\Controllers\CategoryController::class, 'toggleFeatured'])->name('categories.toggleFeatured');
 
@@ -108,6 +111,10 @@ Route::delete('/products/{id}', [App\Http\Controllers\ProductController::class, 
 Route::get('/products/view/{id}', [App\Http\Controllers\ProductController::class, 'view'])->name('products.view');
 
 Route::get('/products/{id}', [App\Http\Controllers\Frontend\ProductsController::class, 'show'])->name('frontend.products.product_detail');
+
+
+
+
 //Route::get('/products', [App\Http\Controllers\Frontend\ProductsController::class, 'index'])->name('frontend.products.index');
 Route::get('/', [App\Http\Controllers\FrontendController::class, 'home'])->name('frontend.home');
 
@@ -131,9 +138,10 @@ Route::post('/cart/update-quantity', [App\Http\Controllers\CartController::class
 Route::post('/cart/update-quantity-logged-out', [App\Http\Controllers\CartController::class, 'updateQuantityLoggedOut'])
     ->name('cart.updateQuantityLoggedOut');
 // Display the checkout form
+Route::view('/order-failure', 'order-failure')->name('order.failure');
 Route::get('/checkout',  [App\Http\Controllers\CheckoutController::class, 'showCheckoutForm'])->name('checkout');
 Route::post('/checkout',  [App\Http\Controllers\CheckoutController::class, 'processOrder'])->name('checkout.process');
-Route::get('/thank-you', [App\Http\Controllers\CheckoutController::class, 'thankYouPage'])->name('thank-you-page');
+Route::get('/thank-you/{orderId}', [App\Http\Controllers\CheckoutController::class, 'thankYouPage'])->name('thank-you-page');
 Route::get('/edit-profile', [App\Http\Controllers\CustomerController::class, 'editProfile'])->name('editProfile');
 Route::post('/update-profile', [App\Http\Controllers\CustomerController::class, 'updateProfile'])->name('updateProfile');
 Route::get('/order-details', [App\Http\Controllers\CustomerController::class, 'orderDetails'])->name('orderDetails');
@@ -156,7 +164,10 @@ Route::get('/orders/filter', [App\Http\Controllers\OrderController::class, 'filt
 Route::get('/feedback/{order_number}', [App\Http\Controllers\OrderController::class, 'feedback'])->name('feedback');
 Route::get('feedback/create/{orderNumber}', [App\Http\Controllers\FeedbackController::class, 'create'])->name('feedback.create');
 Route::post('feedback/store/{orderNumber}', [App\Http\Controllers\FeedbackController::class, 'store'])->name('feedback.store');
-
+Route::post('/razorpay/payment', [App\Http\Controllers\RazorpayController::class,'handlePaymentCallback']);
+Route::post('/razorpay/payment/callback', [App\Http\Controllers\RazorpayController::class, 'handlePaymentCallback'])->name('razorpay.payment');
+Route::post('/update-order-status/{orderId}/{transactionId}', [App\Http\Controllers\CheckoutController::class, 'updateStatus'])
+    ->name('update-order-status');
 Route::view('/home', 'home')->middleware('auth');
 Route::view('/admin', 'admin');
 Route::view('/writer', 'writer');

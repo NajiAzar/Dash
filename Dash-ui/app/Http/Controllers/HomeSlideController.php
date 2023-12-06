@@ -11,6 +11,10 @@ class HomeSlideController extends Controller
 {
     public function show()
     {
+        if (!Auth::guard('admin')->check()) {
+            
+            return redirect()->route('login'); 
+        }
         
         $user = Auth::guard('admin')->user();
         $homesliders = Homeslide::all(); 
@@ -20,6 +24,10 @@ class HomeSlideController extends Controller
     
     public function add()
     {
+        if (!Auth::guard('admin')->check()) {
+            
+            return redirect()->route('login'); 
+        }
         $user = Auth::guard('admin')->user();
       
         return view('homesliders.add',compact('user'));
@@ -53,6 +61,10 @@ class HomeSlideController extends Controller
 
 public function edit($id)
 {
+    if (!Auth::guard('admin')->check()) {
+            
+        return redirect()->route('login'); 
+    }
     $user = Auth::guard('admin')->user();
     $homeslider = Homeslide::find($id);
     return view('homesliders.edit', compact('user','homeslider'));

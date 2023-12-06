@@ -26,10 +26,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Add Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+<!-- Include Pickaday CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/css/pikaday.min.css" integrity="sha512-..." crossorigin="anonymous" />
+<!-- Include Moment.js (required by Pickaday) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-..." crossorigin="anonymous"></script>
 
+<!-- Include Pickaday JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/pikaday.min.js" integrity="sha512-..." crossorigin="anonymous"></script>
 <!-- Add Bootstrap JavaScript (and Popper.js for Bootstrap 4) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha384-Z6kSTIpBAYZlTlgNDOAesoefpW1rbZXETLl3wNQ+VBC/7Y6D59eQ5O3f3bpblnMd" crossorigin="anonymous">
 
     <link
       href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
@@ -41,7 +48,7 @@
     <link rel="stylesheet" href="{{ asset('css/demo.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
     <link rel="stylesheet" href="{{ asset('css/demo.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/apex-charts/apex-charts.css') }}"" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/apex-charts/apex-charts.css') }}" />
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('js/config.js') }}"></script>
   </head>
@@ -209,9 +216,18 @@
                 <div data-i18n="User interface">Products</div>
               </a>
             </li>
-        
-        
-            
+            <li class="menu-item">
+              <a href="{{ route('sales.report') }}" class="menu-link ">
+                <i class="menu-icon tf-icons bx bx-detail"></i>
+                <span class="align-middle">Sales Report</span>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="{{ route('cancelledorders.report') }}" class="menu-link ">
+                <i class="menu-icon tf-icons bx bx-detail"></i>
+                <span class="align-middle">Cancelled Orders Report</span>
+              </a>
+            </li>
           </ul>
         </aside>
 
@@ -290,6 +306,7 @@
                           <span class="align-middle">My Profile</span>
                     </a>
                      </li>
+                    
 
                    
                    

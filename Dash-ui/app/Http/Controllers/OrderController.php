@@ -41,6 +41,10 @@ class OrderController extends Controller
 
     public function show()
     {
+        if (!Auth::guard('admin')->check()) {
+            
+            return redirect()->route('login'); 
+        }
         $orders = Order::latest()->paginate(10);
 
         $user = Auth::guard('admin')->user();
@@ -49,6 +53,10 @@ class OrderController extends Controller
     }
     public function view($id)
     {
+        if (!Auth::guard('admin')->check()) {
+            
+            return redirect()->route('login'); 
+        }
         $user = Auth::guard('admin')->user();
         $order = Order::find($id);
         $orderFeedbacks = Feedback::where('order_id', $id)->get();
@@ -62,6 +70,12 @@ class OrderController extends Controller
         $newStatus = $request->input('status');
         $order = Order::find($orderId);
         if ($order) {
+            if ($newStatus === 'cancelled') {
+                // Set the 'cancelled_date' if the order is not already cancelled
+                if ($order->status !== 'cancelled') {
+                    $order->cancelled_date = now();
+                }
+            }
             $order->status = $newStatus;
             $order->save();
 
@@ -94,6 +108,7 @@ class OrderController extends Controller
     }
 
     $order->status = 'cancelled';
+    $order->cancelled_date = now();
     $order->save();
 
     return redirect('/')->with('success', 'Your order has been cancelled successfully.');
@@ -110,6 +125,7 @@ public function processCancelOrder($orderId)
 
    
     $order->status = 'cancelled';
+    $order->cancelled_date = now();
     $order->save();
 
     return redirect()->route('frontend.home')->with('success', 'Your order has been cancelled successfully.');
@@ -142,9 +158,7 @@ public function verifyOrderemail(Request $request, $orderId)
         return redirect()->route('verifyOrderPage', ['orderId' => $orderId])->with('error', 'Invalid email address for the order.');
     }
 
-    // Add any additional verification logic here...
-
-    // If verification is successful, redirect to the order details page
+ 
     return redirect()->route('cancelorderDetails', ['orderId' => $orderId])->with('emailAddress', $emailAddress);
 }
 
@@ -158,6 +172,7 @@ public function cancelorderDetails($orderId)
 
     // Add logic to cancel the order (update order status, etc.)
     $order->status = 'cancelled';
+    $order->cancelled_date = now(); // Set the current date and time
     $order->save();
 
     return redirect()->route('VerifiedorderDetails', ['orderId' => $orderId])->with('success', 'Email Verified successfully.');
@@ -177,13 +192,15 @@ public function filterOrders(Request $request)
 {
     $orderNumber = $request->input('order_number');
     $status = $request->input('status');
-    // dd($status);
+    $paymentMethod = $request->input('payment_method');
+    
     $user = Auth::guard('admin')->user();
     $orders = Order::query();
 
     if ($orderNumber) {
         $orders->where('id', $orderNumber);
     }
+
     if ($status !== null) {
         if ($status === 'pending') {
             $orders->whereIn('status', ['pending', '0']);
@@ -192,10 +209,15 @@ public function filterOrders(Request $request)
         }
     }
 
+    if ($paymentMethod !== null) {
+        $orders->where('payment_method', $paymentMethod);
+    }
+
     $filteredOrders = $orders->latest()->paginate(10);
 
     return view('order.show', ['orders' => $filteredOrders, 'user' => $user]);
 }
+
 
 public function feedback($orderNumber)
 {
@@ -206,6 +228,7 @@ public function feedback($orderNumber)
 
     return view('feedback.form', ['order' => $order]);
 }
+
 
 }
 

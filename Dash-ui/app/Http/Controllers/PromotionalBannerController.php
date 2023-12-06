@@ -10,7 +10,11 @@ class PromotionalBannerController extends Controller
 {
     public function show()
     {
-        
+        if (!Auth::guard('admin')->check()) {
+            
+            return redirect()->route('login'); 
+        }
+
         $user = Auth::guard('admin')->user();
         $promotionalbanners = PromotionalBanner::all(); 
     
@@ -19,6 +23,10 @@ class PromotionalBannerController extends Controller
     
     public function add()
     {
+        if (!Auth::guard('admin')->check()) {
+            
+            return redirect()->route('login'); 
+        }
         $user = Auth::guard('admin')->user();
       
         return view('promotionalbanners.add',compact('user'));
@@ -52,6 +60,10 @@ class PromotionalBannerController extends Controller
 
 public function edit($id)
 {
+    if (!Auth::guard('admin')->check()) {
+            
+        return redirect()->route('login'); 
+    }
     $user = Auth::guard('admin')->user();
     $promotionalbanner = PromotionalBanner::find($id);
     return view('promotionalbanners.edit', compact('user','promotionalbanner'));

@@ -229,11 +229,12 @@ public function show($id)
         // Set cart count based on session data
         $cartCount = count($sessionCart);
     }
-    $similarProducts = Product::where('category_id', $product->category_id) 
-    ->where('id', '!=', $id) 
+    $similarProducts = Product::select('products.*', 'brands.brand_name')
+    ->join('brands', 'products.brand_id', '=', 'brands.id')
+    ->where('products.category_id', $product->category_id)
+    ->where('products.id', '!=', $id)
     ->limit(4)
     ->get();
-  
     return view('frontend.products.product_detail', compact('product','similarProducts', 'images', 'wishlistCount', 'cartCount', 'isInWishlist', 'isInCart', 'wishlistItem', 'cartItems', 'cartTotal'));
 }
 public function search(Request $request)

@@ -11,6 +11,11 @@ class TestimonialController extends Controller
     
     public function show()
     {
+        if (!Auth::guard('admin')->check()) {
+            
+            return redirect()->route('login'); 
+        }
+
         
         $user = Auth::guard('admin')->user();
         $testimonials = Testimonial::all(); // Fetch all testimonials
@@ -20,6 +25,10 @@ class TestimonialController extends Controller
     
     public function add()
     {
+        if (!Auth::guard('admin')->check()) {
+            
+            return redirect()->route('login'); 
+        }
         $user = Auth::guard('admin')->user();
       
         return view('testimonials.add',compact('user'));
@@ -53,6 +62,10 @@ class TestimonialController extends Controller
 
 public function edit($id)
 {
+    if (!Auth::guard('admin')->check()) {
+            
+        return redirect()->route('login'); 
+    }
     $user = Auth::guard('admin')->user();
     $testimonial = Testimonial::find($id);
     return view('testimonials.edit', compact('user','testimonial'));

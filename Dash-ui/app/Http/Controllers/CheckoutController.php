@@ -14,6 +14,7 @@ use App\Models\OrderDetail;
 use App\Mail\OrderConfirmationMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use Razorpay\Api\Api;
 
 class CheckoutController extends Controller
 {
@@ -108,6 +109,7 @@ class CheckoutController extends Controller
             'billing_address_id' => $billingAddress->id,
             'shipping_address_id' => $shippingAddress->id,
             'payment_method' => $request->input('payment_method'),
+            'status' => 'pending',
         ]);
     //dd($order);
         // Save order details
@@ -117,22 +119,37 @@ class CheckoutController extends Controller
                 'product_id' => $cartItem->product->id,
                 'quantity' => $cartItem->quantity,
                 'price' => $cartItem->product->price,
+               
             ]);
         }
     
         // Send email notification
         $this->sendOrderConfirmationEmail($customer, $order, $cartItems, $request);
     
-        // Clear the cart for authenticated users
-        if ($customer) {
-            Cart::where('customer_id', $customer->id)->delete();
+        if ($request->input('payment_method') === 'cash_on_delivery') {
+            // Clear the cart for authenticated users
+            if ($customer) {
+                Cart::where('customer_id', $customer->id)->delete();
+            }
+    
+            Session::forget('cart');
+    
+            return view('thank-you', compact('order', 'cartItems'));
+        } else {
+            // Redirect to Razorpay payment gateway
+            $razorpay = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
+    
+            $orderData = [
+                'receipt' => (string) $order->id,
+                'amount' => $totalAmount * 100, // Razorpay accepts amount in paise
+                'currency' => 'INR', // Update with your currency code
+            ];
+    
+            $razorpayOrder = $razorpay->order->create($orderData);
+
+            return view('razorpay.payment', ['razorpayOrder' => $razorpayOrder, 'order' => $order]);
         }
-    
-        Session::forget('cart');
-    
-        return $this->thankYouPage($order, $cartItems);
     }
-    
     protected function sendOrderConfirmationEmail($customer, $order, $cartItems, $request)
     {
         $emailData = [
@@ -153,12 +170,47 @@ class CheckoutController extends Controller
         Mail::to($emailAddress)->send(new OrderConfirmationMail($customer ?? $defaultCustomer, $order, $cartItems));
     }
     
+    public function updateStatus($orderId, $transactionId)
+    {
+        // Update order status
+        Order::where('id', $orderId)
+            ->update([
+                'status_paid' => true,
+                'status' => "processed",
+                'transaction_id' => $transactionId,
+            ]);
     
+            if (auth()->guard('customer')->check()) {
+                $customer = auth()->guard('customer')->user();
+                if ($customer) {
+                    Cart::where('customer_id', $customer->id)->delete();
+                }
+            }
+                Session::forget('cart');
+           
+            return response()->json([
+                'message' => 'Order status updated successfully',
+                'transaction_id' => $transactionId,
+                'status_paid' => true,
+                'id' => $orderId,
+                // You can include more data if needed
+            ]);
+        
+    }
     
-
-    public function thankYouPage($order, $cartItems)
-{
-   
-    return view('thank-you', compact('order', 'cartItems'));
-}
+    public function thankYouPage($orderId)
+    {
+        // Retrieve the order and its details
+        $order = Order::with('orderDetails')->find($orderId);
+    
+        if (!$order) {
+            // Handle case when the order is not found
+            return response()->view('order-not-found', [], 404);
+        }
+    
+        // Retrieve cart items directly from the order details
+        $cartItems = $order->orderDetails;
+    
+        return view('thank-you', compact('order', 'cartItems'));
+    }
 }

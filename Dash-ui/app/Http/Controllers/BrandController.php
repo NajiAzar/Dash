@@ -10,6 +10,10 @@ class BrandController extends Controller
 {
     public function index()
     {
+        if (!Auth::guard('admin')->check()) {
+            
+            return redirect()->route('login'); 
+        }
         $brands = Brand::paginate(10);
         $user = Auth::guard('admin')->user();
      
@@ -18,6 +22,10 @@ class BrandController extends Controller
 
     public function add()
     { 
+        if (!Auth::guard('admin')->check()) {
+            
+            return redirect()->route('login'); 
+        }
         $user = Auth::guard('admin')->user();
         return view('brands.add', compact('user'));
     }
@@ -43,6 +51,10 @@ class BrandController extends Controller
 
     public function edit($id)
     {
+        if (!Auth::guard('admin')->check()) {
+            
+            return redirect()->route('login'); 
+        }
         $user = Auth::guard('admin')->user();
         $brand = Brand::findOrFail($id);
         return view('brands.edit', compact('brand','user'));

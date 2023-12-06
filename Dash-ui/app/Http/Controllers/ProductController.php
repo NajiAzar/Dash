@@ -15,6 +15,10 @@ class ProductController extends Controller
     // Show a specific product
     public function show()
     {
+        if (!Auth::guard('admin')->check()) {
+            
+            return redirect()->route('login'); 
+        }
         $user = Auth::guard('admin')->user();
         $totalProductsCount = Product::count();
         $products = Product::paginate(10);
@@ -25,6 +29,10 @@ class ProductController extends Controller
     // Show the form to add a new product
     public function add()
     {
+        if (!Auth::guard('admin')->check()) {
+            
+            return redirect()->route('login'); 
+        }
         $user = Auth::guard('admin')->user();
         $categories = Category::all();
         $brands = Brand::all();
@@ -82,6 +90,10 @@ class ProductController extends Controller
     }
     public function view($id)
 {
+    if (!Auth::guard('admin')->check()) {
+            
+        return redirect()->route('login'); 
+    }
     $user = Auth::guard('admin')->user();
     $product = Product::find($id);
     $categories = Category::all();
@@ -93,6 +105,10 @@ class ProductController extends Controller
     
     public function edit($id)
     {
+        if (!Auth::guard('admin')->check()) {
+            
+            return redirect()->route('login'); 
+        }
         $user = Auth::guard('admin')->user();
         $product = Product::find($id);
         $categories = Category::all();

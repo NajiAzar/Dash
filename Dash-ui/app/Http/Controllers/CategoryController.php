@@ -10,12 +10,20 @@ class CategoryController extends Controller
 {
     public function show()
     {
+        if (!Auth::guard('admin')->check()) {
+            
+            return redirect()->route('login'); 
+        }
         $categories = Category::paginate(10);
         $user = Auth::guard('admin')->user();
         return view('categories.show', compact('user', 'categories'));
     }
     public function add()
     {
+        if (!Auth::guard('admin')->check()) {
+            
+            return redirect()->route('login'); 
+        }
         $user = Auth::guard('admin')->user();
         $categories = Category::all(); // Retrieve all categories
         // Add logic to display the create category form
@@ -60,6 +68,10 @@ class CategoryController extends Controller
     
     public function edit($id)
 {
+    if (!Auth::guard('admin')->check()) {
+            
+        return redirect()->route('login'); 
+    }
     $user = Auth::guard('admin')->user();
     $category = Category::find($id);
     $categories = Category::all();  // Or fetch the categories you need for dropdown
